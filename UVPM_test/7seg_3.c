@@ -23,19 +23,19 @@ enum {
 	ERROR = 0b11111001
 	};
 
-void print(uint8_t number, uint8_t segment);
+void printNumber(uint8_t number, uint8_t segment);
 
 
-void _7seg_print(uint8_t number2, uint8_t number1, uint8_t number0) {
-	print(number0, 0);
+void print(uint8_t number) {
+	printNumber(number/100, 2);
 	_delay_us(500);
-	print(number1, 1);
+	printNumber((number%100)/10, 1);
 	_delay_us(500);
-	print(number2, 2);
+	printNumber(number%10, 0);
 	_delay_us(500);
 }
 
-void print(uint8_t number, uint8_t segment) {
+void printNumber(uint8_t number, uint8_t segment) {
 	switch (number) {
 	case 0: PORT_7SEG = ZERO; break;
 	case 1: PORT_7SEG = ONE; break;

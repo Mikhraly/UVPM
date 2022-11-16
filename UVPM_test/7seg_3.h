@@ -21,7 +21,7 @@
 #define SEG2 5
 
 
-void _7seg_print(uint8_t number2, uint8_t number1, uint8_t number0);
+void print(uint8_t number);
 
 
 #endif /* _7SEG_3_H_ */

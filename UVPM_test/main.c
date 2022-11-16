@@ -10,7 +10,6 @@
 #include "port.h"
 #include "7seg_3.h"
 
-uint8_t numbers[] = {0, 5, 7};
 
 ISR (INT0_vect) {
 	
@@ -24,18 +23,28 @@ ISR (INT1_vect) {
 
 int main(void)
 {
+	uint8_t delay = 0;
+	
 	port_init();
 	
     while (1) 
     {
+		print(delay);
+		
 		if ((PIND & (1<<2)) == 0) {
-			PORTD |= 1<<4;
-			numbers[0]++;
-			_delay_ms(5);
+			delay += 1;
+			_delay_ms(300);
 		}
 		
-		
-		_7seg_print(numbers[2], numbers[1], numbers[0]);
+		if ((PIND & (1<<3)) == 0) {
+			while (delay) {
+				_delay_ms(1000);
+				delay--;
+				print(delay);
+			}
+			
+			PORTD |= 1<<4;
+		}
     }
 }
 
