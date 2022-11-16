@@ -1,0 +1,6 @@
+.vs
+
+UVPM_test/Debug/*
+!UVPM_test/Debug/*.hex
+UVPM_test/Release/*
+!UVPM_test/Release/*.hex
