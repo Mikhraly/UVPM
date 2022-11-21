@@ -9,6 +9,8 @@
 #ifndef PORT_H_
 #define PORT_H_
 
+#include "main.h"
+
 void port_init();
 
 #endif /* PORT_H_ */

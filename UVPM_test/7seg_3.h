@@ -10,9 +10,7 @@
 #define _7SEG_3_H_
 
 
-#define F_CPU 8000000UL
-
-#include <util/delay.h>
+#include "main.h"
 
 #define PORT_7SEG PORTC
 #define COM_7SEG PORTD

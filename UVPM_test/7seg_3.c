@@ -5,7 +5,6 @@
  *  Author: m.gasratov
  */ 
 
-#include <avr/io.h>
 #include "7seg_3.h"
 
 

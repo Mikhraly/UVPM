@@ -5,19 +5,7 @@
  * Author : m.gasratov
  */ 
 
-#include <avr/io.h>
-#include <avr/interrupt.h>
-#include "port.h"
-#include "7seg_3.h"
-
-
-ISR (INT0_vect) {
-	
-}
-
-ISR (INT1_vect) {
-	
-}
+#include "main.h"
 
 //asm("sei");
 

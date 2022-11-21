@@ -5,7 +5,7 @@
  *  Author: m.gasratov
  */ 
 
-#include <avr/io.h>
+#include "port.h"
 
 
 void port_init() {
