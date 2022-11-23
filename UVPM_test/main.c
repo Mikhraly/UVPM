@@ -7,32 +7,65 @@
 
 #include "main.h"
 
-//asm("sei");
+asm("sei");
 
 int main(void)
 {
-	uint8_t delay = 0;
-	
 	port_init();
 	
-    while (1) 
-    {
-		print(delay);
+ 	// TODO считать пзу и если оно не равно нулю перейти в режим WORK
+	
+	while(1) {
 		
-		if ((PIND & (1<<2)) == 0) {
-			delay += 1;
-			_delay_ms(300);
-		}
-		
-		if ((PIND & (1<<3)) == 0) {
-			while (delay) {
-				_delay_ms(1000);
-				delay--;
-				print(delay);
+		while (mode == HOME_SEC) 
+		{
+			if ((PIND & (1<<2)) == 0) {
+				displayOnesBlink();
+				flagDisplayMilSec = 0;
+				_delay_ms(300);
 			}
-			
-			PORTD |= 1<<4;
+			if ((PIND & (1<<3)) == 0) {
+				displayOnesBlink();
+				flagDisplayMilSec = 1;
+				_delay_ms(300);
+			}
 		}
-    }
+
+	}
+	
+	
+	
+	while ((PIND & (1<<2)) == 0) {
+		counterSec += 1;
+		_delay_ms(300);
+	}
+	while ((PIND & (1<<3)) == 0) {
+		counterSec -= 1;
+		_delay_ms(300);
+	}
+	
+	switch (mode) {
+	case HOME_SEC:
+		break;
+	case INIT_SEC:
+		break;
+	case INIT_MILSEC:
+		break;
+	case WORK:
+		break;
+	default:
+		break;
+	}
+	
+	
 }
 
+
+void displayOnesBlink() {
+	_7SEG_SEG_PORT &= ~(1<<_7SEG_SEG_0) & ~(1<<_7SEG_SEG_1) & ~(1<<_7SEG_SEG_2) & ~(1<<_7SEG_SEG_3);
+	_delay_ms(300);
+}
+
+void displayBlink(uint8_t status) {
+	
+}

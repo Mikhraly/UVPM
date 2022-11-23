@@ -133,16 +133,19 @@
     </ToolchainSettings>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="7seg_3.c">
+    <Compile Include="7seg_4.c">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="7seg_3.h">
+    <Compile Include="7seg_4.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="main.c">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="main.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="myUtils.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="port.c">
