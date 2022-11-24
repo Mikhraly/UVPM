@@ -20,53 +20,80 @@
 #include "myUtils.h"
 
 
-enum Modes{
-	HOME_SEC,
-	HOME_MILSEC,
+enum Buttons {
+	BUTTON_PIN = PIND,
+	BUTTON_1 = 2,
+	BUTTON_2 = 3
+	};
+
+enum Modes {
+	HOME,
 	INIT_SEC,
 	INIT_MILSEC,
+	CHOOSE,
 	WORK
 	};
 
-volatile uint8_t mode = HOME_SEC;
-volatile uint16_t counterSec = 0;			// Счеткик в секундах
-volatile uint16_t counterMilSec = 0;		// Счеткик в миллисекундах
-volatile const uint8_t segmentNumbers[] = {0xBF, 0x86, 0xDB, 0xCF, 0xE6, 0xED, 0xFD, 0x87, 0xFF, 0xEF};
-volatile uint8_t flagDisplayMilSec = 0;
+volatile uint8_t mode = HOME;
+volatile uint16_t counter_s = 0;
+volatile uint16_t counter_ms = 0;
+
+volatile const uint8_t displayNumbers[] = {0xBF, 0x86, 0xDB, 0xCF, 0xE6, 0xED, 0xFD, 0x87, 0xFF, 0xEF};
+volatile const uint8_t displayChoose[] = {0x89, 0x00, 0x00, 0xCF};
+volatile uint8_t displaySheet = 0;
+
 
 ISR (TIMER1_COMPA_vect) {
 	volatile static uint8_t segment = 0;
-	volatile static uint8_t display = 0;
 	
-	display = (flagDisplayMilSec) ? counterMilSec : counterSec;
 	_7SEG_SEG_PORT &= ~(1<<_7SEG_SEG_0) & ~(1<<_7SEG_SEG_1) & ~(1<<_7SEG_SEG_2) & ~(1<<_7SEG_SEG_3);
 	
-	switch (segment) {
+	volatile uint16_t divider1 = 10000;
+	for (volatile uint8_t i = 0; i < segment; i++) {
+		divider1 /= 10;
+	}
+	volatile uint16_t divider2 = divider1 / 10;
+	
+	switch (displaySheet) {
 	case 0:
-		_7SEG_DATA_PORT = ~(segmentNumbers[display % 10000 / 1000]);
-		SET_BIT(_7SEG_SEG_PORT, _7SEG_SEG_0);
+		_7SEG_DATA_PORT = ~(displayNumbers[counter_s % divider1 / divider2]);
 		break;
 	case 1:
-		_7SEG_DATA_PORT = ~(segmentNumbers[display % 1000 / 100]);
-		SET_BIT(_7SEG_SEG_PORT, _7SEG_SEG_1);
+		_7SEG_DATA_PORT = ~(displayNumbers[counter_ms % divider1 / divider2]);
 		break;
 	case 2:
-		_7SEG_DATA_PORT = ~(segmentNumbers[display % 100 / 10]);
-		SET_BIT(_7SEG_SEG_PORT, _7SEG_SEG_2);
-		break;
-	case 3:
-		_7SEG_DATA_PORT = ~(segmentNumbers[display % 10]);
-		SET_BIT(_7SEG_SEG_PORT, _7SEG_SEG_3);
+		_7SEG_DATA_PORT = ~(displayChoose[segment]);
 		break;
 	default:
 		break;
 	}
 	
+	_7SEG_SEG_PORT |= 1 << (_7SEG_SEG_0 - segment);
 	if (++segment > 3) segment = 0;
 }
 
-void displayOnesBlink();
-void displayBlink(uint8_t status);
 
+inline void displayON() {
+	SET_BIT(TIMSK, OCIE1A);					// Разрешить прерывание по совпадению TIMER1_COMPA_vect
+}
+
+inline void displayOFF() {
+	RESET_BIT(TIMSK, OCIE1A);				// Запретить прерывание по совпадению TIMER1_COMPA_vect
+	_7SEG_SEG_PORT &= ~(1<<_7SEG_SEG_0) & ~(1<<_7SEG_SEG_1) & ~(1<<_7SEG_SEG_2) & ~(1<<_7SEG_SEG_3);
+}
+
+inline void displayOnesBlink() {
+	displayOFF();
+	_delay_ms(300);
+	displayON();
+}
+
+inline void displayBlinkON() {
+	OCR1A = 50*125;						// Прерывание каждые 50 миллисекунд
+}
+
+inline void displayBlinkOFF() {
+	OCR1A = 15*125;							// Прерывание каждые 15 миллисекунд
+}
 
 #endif /* MAIN_H_ */

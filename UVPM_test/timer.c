@@ -28,3 +28,11 @@ void timer1_init() {
 	RESET_BIT(TCCR1A, WGM11); RESET_BIT(TCCR1A, WGM10);
 	RESET_BIT(TCCR1B, CS02); SET_BIT(TCCR1B, CS01); SET_BIT(TCCR1B, CS00);	// Fclk:64, при Fclk=8МГц один отсчет: 8 мкс; 125 отсчетов: 1 мс
 }
+
+void timer2_init() {
+	TCNT2 = 0;
+	//SET_BIT(TIMSK, OCIE2);								// Разрешено прерывание по совпадению
+	//OCR0 = 125;											// Регистр сравнения - прерывание каждую миллисекунду
+	SET_BIT(TCCR0, WGM01); RESET_BIT(TCCR0, WGM00);		// Mode CTC - сброс при совпадении
+	RESET_BIT(TCCR0, CS02); SET_BIT(TCCR0, CS01); SET_BIT(TCCR0, CS00);	// Fclk:64, при Fclk=8МГц один отсчет: 8 мкс; 125 отсчетов: 1 мс
+}

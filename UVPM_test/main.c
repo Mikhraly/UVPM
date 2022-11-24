@@ -13,20 +13,20 @@ int main(void)
 {
 	port_init();
 	
- 	// TODO считать пзу и если оно не равно нулю перейти в режим WORK
+ 	// TODO считать ПЗУ и если оно не равно нулю перейти в режим WORK
 	
 	while(1) {
 		
-		while (mode == HOME_SEC) 
+		while (mode == HOME) 
 		{
-			if ((PIND & (1<<2)) == 0) {
+			if ((BUTTON_PIN & (1<<BUTTON_1)) == 0) {
+				displaySheet = 0;
 				displayOnesBlink();
-				flagDisplayMilSec = 0;
 				_delay_ms(300);
 			}
-			if ((PIND & (1<<3)) == 0) {
+			if ((BUTTON_PIN & (1<<BUTTON_2)) == 0) {
+				displaySheet = 1;
 				displayOnesBlink();
-				flagDisplayMilSec = 1;
 				_delay_ms(300);
 			}
 		}
@@ -36,16 +36,16 @@ int main(void)
 	
 	
 	while ((PIND & (1<<2)) == 0) {
-		counterSec += 1;
+		counter_s += 1;
 		_delay_ms(300);
 	}
 	while ((PIND & (1<<3)) == 0) {
-		counterSec -= 1;
+		counter_s -= 1;
 		_delay_ms(300);
 	}
 	
 	switch (mode) {
-	case HOME_SEC:
+	case HOME:
 		break;
 	case INIT_SEC:
 		break;
@@ -61,11 +61,4 @@ int main(void)
 }
 
 
-void displayOnesBlink() {
-	_7SEG_SEG_PORT &= ~(1<<_7SEG_SEG_0) & ~(1<<_7SEG_SEG_1) & ~(1<<_7SEG_SEG_2) & ~(1<<_7SEG_SEG_3);
-	_delay_ms(300);
-}
 
-void displayBlink(uint8_t status) {
-	
-}
