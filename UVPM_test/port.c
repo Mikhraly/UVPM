@@ -12,11 +12,11 @@ void port_init() {
 	DDRA = 0xFF;
 	PORTA = 0x00;
 	
-	DDRB = 0;
-	PORTB = 0xFF;
+	DDRB = 0b00000001;
+	PORTB = 0b11111110;
 	
-	DDRC = 0b01111111;
-	PORTC = 0b10000000;
+	DDRC = 0x00;
+	PORTC = 0xFF;
 	
 	DDRD = 0b11110000;
 	PORTD = 0b00001111;

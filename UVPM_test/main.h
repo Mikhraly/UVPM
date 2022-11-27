@@ -37,13 +37,13 @@ enum Modes {
 	};
 
 volatile uint8_t mode = HOME;
-volatile uint16_t counter_s = 1234;
-volatile uint16_t counter_ms = 5678;
+volatile uint16_t counter_s = 0;
+volatile uint16_t counter_ms = 0;
 volatile uint8_t counterButton_33us = 0;	// Приблизительное значение. Высокая точность не требуется
 volatile uint8_t counterButton_s = 0;		// Приблизительное значение. Высокая точность не требуется
 
 volatile const uint8_t displayNumbers[] = {0xBF, 0x86, 0xDB, 0xCF, 0xE6, 0xED, 0xFD, 0x87, 0xFF, 0xEF};
-volatile const uint8_t displayChoose[] = {0x89, 0x00, 0x00, 0xCF};
+volatile const uint8_t displayChoose[] = {0xB9, 0x00, 0x00, 0xCF};
 volatile uint8_t displaySheet = 0;
 
 
@@ -117,5 +117,31 @@ inline void buttonCounterON() {
 inline void buttonCounterOFF() {
 	RESET_BIT(TIMSK, TOIE2);				// Запрешено прерывание по переполнению
 }
+
+
+ISR (TIMER0_COMP_vect) {
+	if (counter_ms > 0) {
+		counter_ms--;
+	} else if (counter_s > 0) {
+		counter_s--;
+		counter_ms = 999;
+	} else {
+		PORTB |= 1 << 0;
+	}
+}
+
+
+inline void stopTimer() {
+	RESET_BIT(TCCR0, CS02); RESET_BIT(TCCR0, CS01); RESET_BIT(TCCR0, CS00);
+}
+
+
+void homeMode();
+void initSecMode();
+void initMilsecMode();
+void initTime(uint8_t mode, uint8_t _displaySheet, volatile uint16_t *counter);
+void chooseMode(uint8_t _displaySheet);
+void workMode();
+
 
 #endif /* MAIN_H_ */
