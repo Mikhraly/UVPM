@@ -18,12 +18,12 @@
 #include <util/delay.h>
 
 
-#define _7SEG_DATA_PORT PORTC
+#define _7SEG_DATA_PORT PORTA
 #define _7SEG_SEG_PORT PORTD
-#define _7SEG_SEG_0 7
-#define _7SEG_SEG_1 6
-#define _7SEG_SEG_2 5
-#define _7SEG_SEG_3 4
+#define _7SEG_SEG_0 4
+#define _7SEG_SEG_1 5
+#define _7SEG_SEG_2 6
+#define _7SEG_SEG_3 7
 
 
 void print(uint8_t number);

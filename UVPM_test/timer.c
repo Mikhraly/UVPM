@@ -12,7 +12,7 @@
 void timer0_init() {
 	TCNT0 = 0;
 	SET_BIT(TIMSK, OCIE0);								// Разрешено прерывание по совпадению
-	OCR0 = 125;											// Регистр сравнения - прерывание каждую миллисекунду
+	OCR0 = 1*125;										// Регистр сравнения - прерывание каждую миллисекунду
 	SET_BIT(TCCR0, WGM01); RESET_BIT(TCCR0, WGM00);		// Mode CTC - сброс при совпадении
 	RESET_BIT(TCCR0, CS02); SET_BIT(TCCR0, CS01); SET_BIT(TCCR0, CS00);	// Fclk:64, при Fclk=8МГц один отсчет: 8 мкс; 125 отсчетов: 1 мс
 }
@@ -21,7 +21,7 @@ void timer0_init() {
 void timer1_init() {
 	TCNT1 = 0;
 	SET_BIT(TIMSK, OCIE1A);								// Разрешено прерывание по совпадению TIMER1_COMPA_vect
-	OCR1A = 15*125;										// Прерывание каждые 15 миллисекунд
+	OCR1A = 4*125;										// Прерывание каждые 4 миллисекунды
 	//TIMSK |= 1<<OCIE1B;									// Разрешено прерывание по совпадению TIMER1_COMPB_vect
 	//OCR1B = 7812;											// Прерывание каждые хх миллисекунд
 	RESET_BIT(TCCR1B, WGM13); SET_BIT(TCCR1B, WGM12);	// Mode CTC - сброс при совпадении
@@ -29,10 +29,11 @@ void timer1_init() {
 	RESET_BIT(TCCR1B, CS02); SET_BIT(TCCR1B, CS01); SET_BIT(TCCR1B, CS00);	// Fclk:64, при Fclk=8МГц один отсчет: 8 мкс; 125 отсчетов: 1 мс
 }
 
+// Для замера длительности нажатия кнопки
 void timer2_init() {
 	TCNT2 = 0;
-	//SET_BIT(TIMSK, OCIE2);								// Разрешено прерывание по совпадению
-	//OCR0 = 125;											// Регистр сравнения - прерывание каждую миллисекунду
-	SET_BIT(TCCR0, WGM01); RESET_BIT(TCCR0, WGM00);		// Mode CTC - сброс при совпадении
-	RESET_BIT(TCCR0, CS02); SET_BIT(TCCR0, CS01); SET_BIT(TCCR0, CS00);	// Fclk:64, при Fclk=8МГц один отсчет: 8 мкс; 125 отсчетов: 1 мс
+	RESET_BIT(TIMSK, TOIE2);								// Запрешено прерывание по переполнению
+	//OCR2 = 125;											// Регистр сравнения - прерывание каждую миллисекунду
+	RESET_BIT(TCCR2, WGM21); RESET_BIT(TCCR2, WGM20);		// Mode NORMAL - нормальный режим
+	SET_BIT(TCCR2, CS02); SET_BIT(TCCR2, CS01); SET_BIT(TCCR2, CS00);	// Fclk:1024, при Fclk=8МГц один отсчет: 128 мкс
 }

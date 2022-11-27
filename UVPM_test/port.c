@@ -9,8 +9,8 @@
 
 
 void port_init() {
-	DDRA = 0;
-	PORTA = 0xFF;
+	DDRA = 0xFF;
+	PORTA = 0x00;
 	
 	DDRB = 0;
 	PORTB = 0xFF;

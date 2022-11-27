@@ -18,10 +18,12 @@
 #include "port.h"
 #include "7seg_4.h"
 #include "myUtils.h"
+#include "timer.h"
 
 
+#define BUTTON_PIN  PIND
+	
 enum Buttons {
-	BUTTON_PIN = PIND,
 	BUTTON_1 = 2,
 	BUTTON_2 = 3
 	};
@@ -35,8 +37,10 @@ enum Modes {
 	};
 
 volatile uint8_t mode = HOME;
-volatile uint16_t counter_s = 0;
-volatile uint16_t counter_ms = 0;
+volatile uint16_t counter_s = 1234;
+volatile uint16_t counter_ms = 5678;
+volatile uint8_t counterButton_33us = 0;	// Приблизительное значение. Высокая точность не требуется
+volatile uint8_t counterButton_s = 0;		// Приблизительное значение. Высокая точность не требуется
 
 volatile const uint8_t displayNumbers[] = {0xBF, 0x86, 0xDB, 0xCF, 0xE6, 0xED, 0xFD, 0x87, 0xFF, 0xEF};
 volatile const uint8_t displayChoose[] = {0x89, 0x00, 0x00, 0xCF};
@@ -56,19 +60,19 @@ ISR (TIMER1_COMPA_vect) {
 	
 	switch (displaySheet) {
 	case 0:
-		_7SEG_DATA_PORT = ~(displayNumbers[counter_s % divider1 / divider2]);
+		_7SEG_DATA_PORT = displayNumbers[counter_s % divider1 / divider2];
 		break;
 	case 1:
-		_7SEG_DATA_PORT = ~(displayNumbers[counter_ms % divider1 / divider2]);
+		_7SEG_DATA_PORT = displayNumbers[counter_ms % divider1 / divider2];
 		break;
 	case 2:
-		_7SEG_DATA_PORT = ~(displayChoose[segment]);
+		_7SEG_DATA_PORT = displayChoose[segment];
 		break;
 	default:
 		break;
 	}
 	
-	_7SEG_SEG_PORT |= 1 << (_7SEG_SEG_0 - segment);
+	_7SEG_SEG_PORT |= 1 << (segment + _7SEG_SEG_0);
 	if (++segment > 3) segment = 0;
 }
 
@@ -82,18 +86,36 @@ inline void displayOFF() {
 	_7SEG_SEG_PORT &= ~(1<<_7SEG_SEG_0) & ~(1<<_7SEG_SEG_1) & ~(1<<_7SEG_SEG_2) & ~(1<<_7SEG_SEG_3);
 }
 
-inline void displayOnesBlink() {
+inline static void displayOnesBlink() {
 	displayOFF();
-	_delay_ms(300);
+	_delay_ms(200);
 	displayON();
 }
 
 inline void displayBlinkON() {
-	OCR1A = 50*125;						// Прерывание каждые 50 миллисекунд
+	OCR1A = 8*125;							// Прерывание каждые 8 миллисекунд
 }
 
 inline void displayBlinkOFF() {
-	OCR1A = 15*125;							// Прерывание каждые 15 миллисекунд
+	OCR1A = 4*125;							// Прерывание каждые 4 миллисекунд
+}
+
+
+ISR (TIMER2_OVF_vect) {
+	if (++counterButton_33us > 30) {
+		counterButton_33us = 0;
+		counterButton_s++;
+	}
+}
+
+inline void buttonCounterON() {
+	counterButton_33us = 0;
+	counterButton_s = 0;
+	SET_BIT(TIMSK, TOIE2);					// Разрешено прерывание по переполнению
+}
+
+inline void buttonCounterOFF() {
+	RESET_BIT(TIMSK, TOIE2);				// Запрешено прерывание по переполнению
 }
 
 #endif /* MAIN_H_ */
