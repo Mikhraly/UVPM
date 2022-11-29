@@ -15,6 +15,7 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <util/delay.h>
+#include <avr/eeprom.h>
 #include "port.h"
 #include "7seg_4.h"
 #include "myUtils.h"

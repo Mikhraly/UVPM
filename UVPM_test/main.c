@@ -16,7 +16,13 @@ int main(void)
 	
 	asm("sei");
 	
- 	// TODO считать ПЗУ и если оно не равно нулю перейти в режим WORK
+	eeprom_busy_wait();
+	counter_s = eeprom_read_word((uint16_t *)0x00);
+	eeprom_busy_wait();
+	counter_ms = eeprom_read_word((uint16_t *)0x02);
+	
+	if (counter_s || counter_ms)
+		mode = WORK;
 	
 	while(1) {
 		
@@ -131,7 +137,7 @@ void initTime(uint8_t _mode, uint8_t _displaySheet, volatile uint16_t *counter) 
 			}
 		} else if ((BUTTON_PIN & (1<<BUTTON_2)) == 0) {
 			counterButton_s = 0;
-			if (*counter < 2000) *counter += 1;
+			if (*counter < upperLimit) *counter += 1;
 			_delay_ms(200);
 			
 			while ((BUTTON_PIN & (1<<BUTTON_2)) == 0) {
@@ -161,7 +167,10 @@ void chooseMode(uint8_t _displaySheet) {
 			mode = WORK;
 			displaySheet = _displaySheet;
 		} else if ((BUTTON_PIN & (1<<BUTTON_2)) == 0) {
-			// TODO записать время в ПЗУ
+			eeprom_busy_wait();
+			eeprom_write_word((uint16_t *)0x00, counter_s);
+			eeprom_busy_wait();
+			eeprom_write_word((uint16_t *)0x02, counter_ms);
 			mode = HOME;
 			displaySheet = _displaySheet;
 			displayOnesBlink();
