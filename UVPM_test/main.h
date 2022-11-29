@@ -88,7 +88,7 @@ inline void displayOFF() {
 
 inline static void displayOnesBlink() {
 	displayOFF();
-	_delay_ms(200);
+	_delay_ms(100);
 	displayON();
 }
 
@@ -97,6 +97,7 @@ inline void displayBlinkON() {
 }
 
 inline void displayBlinkOFF() {
+	TCNT1 = 0;
 	OCR1A = 4*125;							// Прерывание каждые 4 миллисекунды
 }
 

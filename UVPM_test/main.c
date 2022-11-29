@@ -21,8 +21,12 @@ int main(void)
 	eeprom_busy_wait();
 	counter_ms = eeprom_read_word((uint16_t *)0x02);
 	
-	if (counter_s || counter_ms)
+	if ((counter_s > 9999) || (counter_ms > 999)) {
+		counter_s = 0;
+		counter_ms = 0;
+	} else if (counter_s || counter_ms) {
 		mode = WORK;
+	}
 	
 	while(1) {
 		switch (mode) {
@@ -164,8 +168,7 @@ void chooseMode(uint8_t _displaySheet) {
 		
 		if ((BUTTON_PIN & (1<<BUTTON_1)) == 0) {
 			mode = WORK;
-			displaySheet = _displaySheet;
-			displayBlinkOFF();
+			_delay_ms(60);
 		} else if ((BUTTON_PIN & (1<<BUTTON_2)) == 0) {
 			eeprom_busy_wait();
 			eeprom_write_word((uint16_t *)0x00, counter_s);
@@ -175,14 +178,15 @@ void chooseMode(uint8_t _displaySheet) {
 			mode = HOME;
 			displaySheet = _displaySheet;
 			displayBlinkOFF();
-			
 			displayOnesBlink();
-			_delay_ms(200);
+			_delay_ms(100);
 			displayOnesBlink();
 		}
 	}
 	
 	buttonCounterOFF();
+	displaySheet = _displaySheet;
+	displayBlinkOFF();
 }
 
 
@@ -208,6 +212,7 @@ void workMode() {
 				if (counterButton_s >= 2) {
 					mode = HOME;
 					stopTimer();
+					PORTB &= ~(1 << 0);
 					displayOnesBlink();
 				}
 			}
