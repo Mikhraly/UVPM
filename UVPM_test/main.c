@@ -109,6 +109,7 @@ void initMilsecMode() {
 
 void initTime(uint8_t _mode, uint8_t _displaySheet, volatile uint16_t *counter) {
 	displaySheet = _displaySheet;
+	uint16_t upperLimit = mode == INIT_SEC ? 9999 : 999;
 	
 	displayBlinkON();
 	while ((BUTTON_PIN & (1<<BUTTON_1)) == 0 || (BUTTON_PIN & (1<<BUTTON_2)) == 0);
@@ -135,7 +136,7 @@ void initTime(uint8_t _mode, uint8_t _displaySheet, volatile uint16_t *counter) 
 			
 			while ((BUTTON_PIN & (1<<BUTTON_2)) == 0) {
 				counterButton_s = 0;
-				if (*counter < 2000) *counter += 1;
+				if (*counter < upperLimit) *counter += 1;
 				_delay_ms(10);
 			}
 		}
@@ -176,7 +177,6 @@ void chooseMode(uint8_t _displaySheet) {
 
 void workMode() {
 	timer0_init();
-	displaySheet = 0;
 	
 	while (mode == WORK) {
 		if ((BUTTON_PIN & (1<<BUTTON_1)) == 0 || (BUTTON_PIN & (1<<BUTTON_2)) == 0) {
