@@ -22,12 +22,10 @@
 #include "timer.h"
 
 
-#define BUTTON_PIN  PIND
-	
-enum Buttons {
-	BUTTON_1 = 2,
-	BUTTON_2 = 3
-	};
+// Кнопки управления
+#define BUTTON_PIN PIND
+#define BUTTON_1 2
+#define BUTTON_2 3
 
 enum Modes {
 	HOME,
@@ -35,7 +33,7 @@ enum Modes {
 	INIT_MILSEC,
 	CHOOSE,
 	WORK
-	};
+};
 
 volatile uint8_t mode = HOME;
 volatile uint16_t counter_s = 0;
@@ -48,6 +46,7 @@ volatile const uint8_t displayChoose[] = {0xB9, 0x00, 0x00, 0xCF};
 volatile uint8_t displaySheet = 0;
 
 
+// Работа дисплея
 ISR (TIMER1_COMPA_vect) {
 	volatile static uint8_t segment = 0;
 	
@@ -98,10 +97,11 @@ inline void displayBlinkON() {
 }
 
 inline void displayBlinkOFF() {
-	OCR1A = 4*125;							// Прерывание каждые 4 миллисекунд
+	OCR1A = 4*125;							// Прерывание каждые 4 миллисекунды
 }
 
 
+// Измерение длительности нажатия кнопок
 ISR (TIMER2_OVF_vect) {
 	if (++counterButton_33us > 30) {
 		counterButton_33us = 0;
@@ -120,6 +120,7 @@ inline void buttonCounterOFF() {
 }
 
 
+// Работа таймера (режим WORK)
 ISR (TIMER0_COMP_vect) {
 	if (counter_ms > 0) {
 		counter_ms--;

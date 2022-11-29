@@ -25,7 +25,6 @@ int main(void)
 		mode = WORK;
 	
 	while(1) {
-		
 		switch (mode) {
 		case HOME:
 			homeMode();
@@ -166,26 +165,30 @@ void chooseMode(uint8_t _displaySheet) {
 		if ((BUTTON_PIN & (1<<BUTTON_1)) == 0) {
 			mode = WORK;
 			displaySheet = _displaySheet;
+			displayBlinkOFF();
 		} else if ((BUTTON_PIN & (1<<BUTTON_2)) == 0) {
 			eeprom_busy_wait();
 			eeprom_write_word((uint16_t *)0x00, counter_s);
 			eeprom_busy_wait();
 			eeprom_write_word((uint16_t *)0x02, counter_ms);
+			
 			mode = HOME;
 			displaySheet = _displaySheet;
+			displayBlinkOFF();
+			
 			displayOnesBlink();
 			_delay_ms(200);
 			displayOnesBlink();
 		}
 	}
 	
-	displayBlinkOFF();
 	buttonCounterOFF();
 }
 
 
 void workMode() {
 	timer0_init();
+	while ((BUTTON_PIN & (1<<BUTTON_1)) == 0 || (BUTTON_PIN & (1<<BUTTON_2)) == 0);
 	
 	while (mode == WORK) {
 		if ((BUTTON_PIN & (1<<BUTTON_1)) == 0 || (BUTTON_PIN & (1<<BUTTON_2)) == 0) {

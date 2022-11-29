@@ -26,7 +26,8 @@
 #define _7SEG_SEG_3 7
 
 
-void print(uint8_t number);
+// void print(uint8_t number);
+// void printNumber(uint8_t digit, uint8_t segment);
 
 
 #endif /* _7SEG_4_H_ */
